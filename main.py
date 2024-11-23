@@ -70,11 +70,19 @@ def mover_pacman(x: int, y: int, speed: int, keys) -> tuple:
         """
     if keys[pygame.K_DOWN]:
         y += speed
-    return x,y
-
-
-
-
+    
+    # Limitar al Pac-Man para que no se salga de la pantalla
+    if x < 0:# Si Pac-Man se mueve más allá del borde derecho
+        x = 0
+    if x > ANCHO - pacman_image.get_width():
+        # Resta el ancho de la imagen de Pac-Man al ancho total de la ventana. 
+        x = ANCHO - pacman_image.get_width()
+    if y < 0: # Si Pac-Man se mueve más allá del borde superior
+        y = 0
+    if y > ALTURA - pacman_image.get_height(): # Si Pac-Man se mueve más allá del borde inferior
+        y = ALTURA - pacman_image.get_height()
+    
+    return x, y
 
 
 
