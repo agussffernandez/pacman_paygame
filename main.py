@@ -31,10 +31,14 @@ MAPA = data["mapa"]
 points = data["comida"]  # Lista de puntos (posiciones en el mapa donde Pac-Man comerá)
 fantasmas = data["fantasmas"]
 
+
 # Cargar la imagen del Pac-Man
 pacman_image = pygame.image.load("pacman.png")
+pacman_image_izq =pygame.transform.flip(pacman_image, True, False)  # Voltea la imagen para que mire hacia la izquierda
+
 # Redimensionar la imagen a un tamaño de 50x50 píxeles
 pacman_image = pygame.transform.scale(pacman_image, (35, 35))
+pacman_image_izq = pygame.transform.scale(pacman_image_izq, (35, 35))
 # Envolvemos la imagen en un rectángulo para manejar mejor la posición
 pacman_rect = pacman_image.get_rect()
 
@@ -87,10 +91,14 @@ def mover_pacman(x: int, y: int, speed: int, keys) -> tuple:
     """ 
     Mueve al pacman según la posición (x,y) en la que se encuentre, y según la tecla que presione
     """
+    pacman_direction = "right"
+    
     if keys[pygame.K_LEFT]:
         x -= speed
+        pacman_direction = "left"
     if keys[pygame.K_RIGHT]:
         x += speed
+        pacman_direction = "right"
     if keys[pygame.K_UP]:
         y -= speed
     if keys[pygame.K_DOWN]:
@@ -106,7 +114,7 @@ def mover_pacman(x: int, y: int, speed: int, keys) -> tuple:
     if y > ALTURA - pacman_image.get_height():  # Si Pac-Man se mueve más allá del borde inferior
         y = ALTURA - pacman_image.get_height()
 
-    return x, y
+    return x, y, pacman_direction
 
 
 def detectar_comida(x: int, y: int, points_collected: int) -> tuple:
@@ -144,11 +152,17 @@ while corriendo:
     keys = pygame.key.get_pressed()
 
     # Mover al Pac-Man
-    pacman_x, pacman_y = mover_pacman(pacman_x, pacman_y, pacman_speed, keys)
+    pacman_x, pacman_y, pacman_direction = mover_pacman(pacman_x, pacman_y, pacman_speed, keys)
 
     # Actualizar la posición del pacman
     pacman_rect.topleft = (pacman_x, pacman_y)
-
+    
+    if pacman_direction == "right":
+        pacman = pacman_image
+    elif pacman_direction == "left":
+        pacman = pacman_image_izq
+    
+    
     # Detectar si come algún punto
     points, points_collected = detectar_comida(pacman_x, pacman_y, points_collected)
 
@@ -156,7 +170,7 @@ while corriendo:
     dibujar_mapa()
 
     # Dibujar Pac-Man usando la imagen cargada
-    PANTALLA.blit(pacman_image, pacman_rect)
+    PANTALLA.blit(pacman, pacman_rect)
 
 
     # Mostrar el marcador con un fondo rectangulo blanco
