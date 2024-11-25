@@ -40,6 +40,10 @@ pacman_speed = 5
 
 # Lista de puntos (posiciones en el mapa donde Pac-Man comerá)
 points = [(100, 100), (200, 200), (300, 300)]
+# Contador de puntos recogidos
+points_collected = 0  
+
+
 
 def dibujar_mapa() -> None:
     """ 
@@ -85,6 +89,36 @@ def mover_pacman(x: int, y: int, speed: int, keys) -> tuple:
     return x, y
 
 
+def detectar_comida(x: int, y:int, points_collected: int) -> tuple:
+    """ 
+    Detecta si el Pac-Man ha recogido alguno de los puntos en la lista points. Si
+    Pac-Man ha tocado un punto, ese punto se elimina de la lista y el contador de puntos recogidos se incrementa.
+
+.
+    """
+    puntos_sin_comer = []  # Lista que almacenará los puntos no recogidos
+    for point in points:
+        # Desempaquetar las coordenadas del punto
+        px, py = point
+        # crea un rectángulo de 10x10 píxeles centrado en el punto (px, py).
+        # px-5 y py-5 se usan para ajustar la posición del rectángulo, de modo que esté centrado en las coordenadas del punto.
+        # colliderect(pacman_rect) verifica si el rectángulo creado para el punto se superpone con el rectángulo de Pac-Man, pacman_rect.
+        if pygame.Rect(px-5, py-5, 10, 10).colliderect(pacman_rect):
+            points_collected += 1 # Incrementa el contador de puntos
+        else:
+            # Si Pac-Man no ha tocado este punto, lo agregamos a la nueva lista
+            puntos_sin_comer.append(point)
+    
+    
+    # Devolver los valores actualizados (nueva lista de puntos y el contador de puntos)
+    return puntos_sin_comer, points_collected
+
+
+
+
+
+
+
 
 
 
@@ -104,13 +138,24 @@ while corriendo:
     # Mover al Pac-Man
     pacman_x, pacman_y = mover_pacman(pacman_x, pacman_y, pacman_speed, keys)
     
+    # Actualizar la posicion del pacman
+    pacman_rect.topleft = (pacman_x, pacman_y)
     
+    # Detectar si come algun punto
+    points, points_collected = detectar_comida(pacman_x, pacman_y, points_collected)
+    
+    # Dibujar el mapa y los puntos
     dibujar_mapa()
     
-    
     # Dibujar Pac-Man usando la imagen cargada
-    pacman_rect.topleft = (pacman_x, pacman_y) # Actualizamos la posición de Pac-Man
     PANTALLA.blit(pacman_image, pacman_rect)
+    
+    # Mostrar el marcador
+    fuente = pygame.font.SysFont(None, 30)
+    texto = fuente.render(f"Puntos: {points_collected}", True, WHITE)
+    PANTALLA.blit(texto, (10,10))
+    
+    
     
     # Actualizar la pantalla
     pygame.display.update()
