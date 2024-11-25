@@ -158,10 +158,22 @@ while corriendo:
     # Dibujar Pac-Man usando la imagen cargada
     PANTALLA.blit(pacman_image, pacman_rect)
 
-    # Mostrar el marcador
+
+    # Mostrar el marcador con un fondo rectangulo blanco
     fuente = pygame.font.SysFont(None, 30)
     texto = fuente.render(f"Puntos: {points_collected}", True, BLACK)
-    PANTALLA.blit(texto, (10, 10))
+    # Obtener el rectangulo del texto
+    texto_rect = texto.get_rect()
+    # Ubicar la posición del recuadro en la esquina superior izquierda
+    texto_rect.topleft = (10, 10)
+    # Elegir un margen alrededor del texto para el recuadro
+    margen = 10
+    # Dibuja el recuadro blanco detrás del texto, usando el rectángulo de texto
+    # La función inflate() de Pygame cambia el tamaño del rectángulo (Rect) incrementando su ancho y alto.  Al poner 2 * margen, estamos expandiendo el rectángulo en ambas direcciones (horizontal y vertical). Si no, solo se expanderia de 1 solo lado
+    pygame.draw.rect(PANTALLA, WHITE, texto_rect.inflate(2*margen, 2*margen))
+    # Dibujar el texto encima del recuadro
+    PANTALLA.blit(texto, texto_rect)
+
 
     # Actualizar la pantalla
     pygame.display.update()
